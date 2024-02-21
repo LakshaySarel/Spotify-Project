@@ -15,54 +15,47 @@ function secondsToMinutesSeconds(seconds) {
     const formattedSeconds = String(remainingSeconds).padStart(2, '0');
     return `${formattedMinutes}:${formattedSeconds}`;
 }
-async function getSongs(folder) {
-    currfolder = folder.replaceAll("20%","");
-
-    let a = await fetch(`https://lakshaysarel.github.io/index.html/${folder}/`);
+async function getSongs() {
+    // Fetch songs from the current directory
+    let a = await fetch('./');
     let response = await a.text();
     let div = document.createElement("div")
     div.innerHTML = response;
     let as = div.getElementsByTagName("a")
-    songs = []
-    for (let index = 0; index < as.length; index++) {
+    let songs = []
+    for (let index = 0; index < as.length; index++) {        
         const element = as[index];
         if (element.href.endsWith(".mp3")) {
-            songs.push(element.href.split(`/${folder}/`)[1])
+            songs.push(element.href.split('/').pop()) // Get the song name from the URL
         }
     }
-       //Show All the Songs in the Playlist    
-       let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
-       for (const song of songs) {
-           songUL.innerHTML = songUL.innerHTML + `<li> <img class="invert" src="music.svg" alt="musiclogo">
-           <div class="info">
-               <div> ${song.replaceAll("%20", "")} </div>
-               <div>Lakshay</div>
-           </div>
-           <div class="playnow">
-               <span>Play Now</span>
-               <img class="invert" src="play.svg" alt="">
-           </div></li>`;
-       }
-       // Attach an event listener to Each Song
-       //Play the first Song You Cam do Like this:-
-       // var audio = new Audio(songs[0]);
-       // audio.play();
-       // audio.addEventListener("loadeddata",()=>{
-       //     console.log(audio.duration,audio.currentSrc,audio.currentTime)
-       // });
-       Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e => {
-           e.addEventListener("click", element => {
-   
-               console.log(e.querySelector(".info").firstElementChild.innerHTML)
-               playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim())
-           })
-       })
-   return songs
 
+    //Show All the Songs in the Playlist    
+    let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
+    for (const song of songs) {
+        songUL.innerHTML = songUL.innerHTML + `<li> <img class="invert" src="music.svg" alt="musiclogo">
+        <div class="info">
+            <div> ${song.replaceAll("%20", " ")} </div>
+            <div>Lakshay</div>
+        </div>
+        <div class="playnow">
+            <span>Play Now</span>
+            <img class="invert" src="play.svg" alt="">
+        </div></li>`;
+    }
+    // Attach an event listener to Each Song
+    Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e => {
+        e.addEventListener("click", element => {
+            console.log(e.querySelector(".info").firstElementChild.innerHTML)
+            playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim())
+        })
+    })
+    return songs
 }
+
 const playMusic = (track, pause = false) => {
     // let audio = new Audio("/songs/" + track)
-    currentSong.src = `/${currfolder}/` + track
+    currentSong.src = "./" + track
     if (!pause) {
         currentSong.play()
         play.src = "pause.svg"
@@ -73,7 +66,7 @@ const playMusic = (track, pause = false) => {
 }
 async function main() {
     // get the list of the ALL Songs
-    songs = await getSongs("songs/ncs")
+    songs = await getSongs()
     playMusic(songs[0], true)
 
     //Attach an Event listner to Play, Next and previos
